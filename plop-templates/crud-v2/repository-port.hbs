@@ -1,0 +1,12 @@
+import { {{pascalCase featureKebab}}Entity } from '../entities/{{kebabCase featureKebab}}.entity';
+import { Create{{pascalCase featureKebab}}Dto } from '../../application/dto/create-{{kebabCase featureKebab}}.dto';
+import { Update{{pascalCase featureKebab}}Dto } from '../../application/dto/update-{{kebabCase featureKebab}}.dto';
+
+export abstract class {{pascalCase featureKebab}}Repository {
+  abstract create(dto: Create{{pascalCase featureKebab}}Dto): Promise<{{pascalCase featureKebab}}Entity>;
+  abstract findAll(): Promise<{{pascalCase featureKebab}}Entity[]>;
+  abstract findById(id: string): Promise<{{pascalCase featureKebab}}Entity | null>;
+  abstract update(id: string, dto: Update{{pascalCase featureKebab}}Dto): Promise<{{pascalCase featureKebab}}Entity>;
+  abstract existsById(id: string): Promise<boolean>;
+  abstract delete(id: string): Promise<void>;
+}

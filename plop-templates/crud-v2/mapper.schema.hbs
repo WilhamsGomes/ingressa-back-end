@@ -1,0 +1,46 @@
+import { PrismaService } from 'src/shared/database/prisma.service';
+import { {{pascalCase featureKebab}}Entity } from '../../domain/entities/{{kebabCase featureKebab}}.entity';
+import { Create{{pascalCase featureKebab}}Dto } from '../../application/dto/create-{{kebabCase featureKebab}}.dto';
+import { Update{{pascalCase featureKebab}}Dto } from '../../application/dto/update-{{kebabCase featureKebab}}.dto';
+
+// Inferindo o tipo do Model direto do PrismaService (sem depender de @prisma/client exportar Event)
+type PrismaModel = NonNullable<
+  Awaited<ReturnType<PrismaService['{{camelCase prismaModel}}']['findUnique']>>
+>;
+
+type CreateArgs = Parameters<PrismaService['{{camelCase prismaModel}}']['create']>[0];
+type CreateData = CreateArgs['data'];
+
+type UpdateArgs = Parameters<PrismaService['{{camelCase prismaModel}}']['update']>[0];
+type UpdateData = UpdateArgs['data'];
+
+export class {{pascalCase featureKebab}}Mapper {
+  static toEntity(model: PrismaModel): {{pascalCase featureKebab}}Entity {
+    return {
+{{#each entityFields}}
+      {{name}}: model.{{name}},
+{{/each}}
+    };
+  }
+
+  static toCreateInput(dto: Create{{pascalCase featureKebab}}Dto): CreateData {
+    // cria um objeto já no tipo esperado pelo prisma client real
+    const data: any = { ...dto };
+
+{{#each dateFieldsCreate}}
+    if (data.{{this}}) data.{{this}} = new Date(data.{{this}});
+{{/each}}
+
+    return data as CreateData;
+  }
+
+  static toUpdateInput(dto: Update{{pascalCase featureKebab}}Dto): UpdateData {
+    const data: any = { ...dto };
+
+{{#each dateFieldsUpdate}}
+    if (data.{{this}}) data.{{this}} = new Date(data.{{this}});
+{{/each}}
+
+    return data as UpdateData;
+  }
+}

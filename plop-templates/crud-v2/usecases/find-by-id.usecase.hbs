@@ -1,0 +1,16 @@
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { {{pascalCase featureKebab}}Repository } from '../../domain/repositories/{{kebabCase featureKebab}}.repository';
+
+@Injectable()
+export class Find{{pascalCase featureKebab}}ByIdUseCase {
+  constructor(
+    @Inject({{pascalCase featureKebab}}Repository)
+    private readonly repository: {{pascalCase featureKebab}}Repository,
+  ) {}
+
+  async execute(id: string) {
+    const item = await this.repository.findById(id);
+    if (!item) throw new NotFoundException('{{pascalCase featureKebab}} not found');
+    return item;
+  }
+}

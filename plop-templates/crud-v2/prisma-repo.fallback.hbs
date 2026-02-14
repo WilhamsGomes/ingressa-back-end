@@ -1,0 +1,39 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/shared/database/prisma.service';
+import { {{pascalCase featureKebab}}Repository } from '../../domain/repositories/{{kebabCase featureKebab}}.repository';
+import { {{pascalCase featureKebab}}Entity } from '../../domain/entities/{{kebabCase featureKebab}}.entity';
+import { Create{{pascalCase featureKebab}}Dto } from '../../application/dto/create-{{kebabCase featureKebab}}.dto';
+import { Update{{pascalCase featureKebab}}Dto } from '../../application/dto/update-{{kebabCase featureKebab}}.dto';
+
+@Injectable()
+export class Prisma{{pascalCase featureKebab}}Repository implements {{pascalCase featureKebab}}Repository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(dto: Create{{pascalCase featureKebab}}Dto): Promise<{{pascalCase featureKebab}}Entity> {
+    return this.prisma.{{camelCase prismaModel}}.create({ data: dto });
+  }
+
+  async findAll(): Promise<{{pascalCase featureKebab}}Entity[]> {
+    return this.prisma.{{camelCase prismaModel}}.findMany();
+  }
+
+  async findById(id: string): Promise<{{pascalCase featureKebab}}Entity | null> {
+    return this.prisma.{{camelCase prismaModel}}.findUnique({ where: { id } });
+  }
+
+  async update(id: string, dto: Update{{pascalCase featureKebab}}Dto): Promise<{{pascalCase featureKebab}}Entity> {
+    return this.prisma.{{camelCase prismaModel}}.update({ where: { id }, data: dto });
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    const found = await this.prisma.{{camelCase prismaModel}}.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    return !!found;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.{{camelCase prismaModel}}.delete({ where: { id } });
+  }
+}

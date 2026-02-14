@@ -1,0 +1,85 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/shared/database/prisma.service';
+import { {{pascalCase prismaModel}} } from '../../domain/entities/user.entity';
+
+import { {{pascalCase featureKebab}}Repository } from '../../domain/repositories/{{kebabCase featureKebab}}.repository';
+import { {{pascalCase featureKebab}}Entity } from '../../domain/entities/{{kebabCase featureKebab}}.entity';
+
+@Injectable()
+export class Prisma{{pascalCase featureKebab}}Repository implements {{pascalCase featureKebab}}Repository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  private toEntity(model: {{pascalCase prismaModel}}): {{pascalCase featureKebab}}Entity {
+    return model as unknown as {{pascalCase featureKebab}}Entity;
+  }
+
+  async create(
+    data: Partial<{{pascalCase featureKebab}}Entity>,
+  ): Promise<{{pascalCase featureKebab}}Entity> {
+    const result = await this.prisma.{{camelCase prismaModel}}.create({
+      data,
+    });
+
+    return this.toEntity(result);
+  }
+
+  async findAll(): Promise<{{pascalCase featureKebab}}Entity[]> {
+    {{#if softDelete}}
+    const results = await this.prisma.{{camelCase prismaModel}}.findMany({
+      where: { status: 1 },
+    });
+    {{else}}
+    const results = await this.prisma.{{camelCase prismaModel}}.findMany();
+    {{/if}}
+
+    return results.map(this.toEntity);
+  }
+
+  async findById(id: string): Promise<{{pascalCase featureKebab}}Entity | null> {
+    {{#if softDelete}}
+    const result = await this.prisma.{{camelCase prismaModel}}.findFirst({
+      where: { id, status: 1 },
+    });
+    {{else}}
+    const result = await this.prisma.{{camelCase prismaModel}}.findUnique({
+      where: { id },
+    });
+    {{/if}}
+
+    return result ? this.toEntity(result) : null;
+  }
+
+  async update(
+    id: string,
+    data: Partial<{{pascalCase featureKebab}}Entity>,
+  ): Promise<{{pascalCase featureKebab}}Entity> {
+    const result = await this.prisma.{{camelCase prismaModel}}.update({
+      where: { id },
+      data,
+    });
+
+    return this.toEntity(result);
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    const found = await this.prisma.{{camelCase prismaModel}}.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    return !!found;
+  }
+
+  async delete(id: string): Promise<void> {
+    {{#if softDelete}}
+    await this.prisma.{{camelCase prismaModel}}.update({
+      where: { id },
+      data: { status: 0 },
+    });
+    {{else}}
+    await this.prisma.{{camelCase prismaModel}}.delete({
+      where: { id },
+    });
+    {{/if}}
+  }
+}

@@ -1,0 +1,14 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { {{pascalCase featureKebab}}Repository } from '../../domain/repositories/{{kebabCase featureKebab}}.repository';
+
+@Injectable()
+export class FindAllUseCase {
+  constructor(
+    @Inject({{pascalCase featureKebab}}Repository)
+    private readonly repository: {{pascalCase featureKebab}}Repository,
+  ) {}
+
+  async execute() {
+    return this.repository.findAll();
+  }
+}

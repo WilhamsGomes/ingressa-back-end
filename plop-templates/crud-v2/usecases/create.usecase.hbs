@@ -1,0 +1,27 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { {{pascalCase featureKebab}}Repository } from '../../domain/repositories/{{kebabCase featureKebab}}.repository';
+import { Create{{pascalCase featureKebab}}Dto } from '../dto/create-{{kebabCase featureKebab}}.dto';
+{{#if hasPassword}}
+import { PasswordService } from '../services/password.service';
+{{/if}}
+
+@Injectable()
+export class Create{{pascalCase featureKebab}}UseCase {
+  constructor(
+    @Inject({{pascalCase featureKebab}}Repository)
+    private readonly repository: {{pascalCase featureKebab}}Repository,
+    {{#if hasPassword}}
+    private readonly passwordService: PasswordService,
+    {{/if}}
+  ) {}
+
+  async execute(dto: Create{{pascalCase featureKebab}}Dto) {
+    {{#if hasPassword}}
+    if (dto?.{{passwordField}}) {
+      (dto as any).{{passwordField}} = await this.passwordService.hash((dto as any).{{passwordField}});
+    }
+    {{/if}}
+
+    return this.repository.create(dto);
+  }
+}

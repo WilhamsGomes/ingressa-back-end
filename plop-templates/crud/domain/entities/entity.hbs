@@ -1,0 +1,13 @@
+export class {{pascalCase featureKebab}}Entity {
+  id: string;
+
+  {{#if softDelete}}
+  status: 0 | 1;
+  {{/if}}
+
+  // Dica: se quiser, depois o plop pode receber fields e preencher aqui automaticamente
+  // Ex:
+  // name: string;
+  // createdAt: Date;
+  // updatedAt: Date;
+}

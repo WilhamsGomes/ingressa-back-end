@@ -1,0 +1,91 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/shared/database/prisma.service';
+
+import { {{pascalCase featureKebab}}Repository } from '../../domain/repositories/{{kebabCase featureKebab}}.repository';
+import { {{pascalCase featureKebab}}Entity } from '../../domain/entities/{{kebabCase featureKebab}}.entity';
+import { Create{{pascalCase featureKebab}}Dto } from '../../application/dto/create-{{kebabCase featureKebab}}.dto';
+import { Update{{pascalCase featureKebab}}Dto } from '../../application/dto/update-{{kebabCase featureKebab}}.dto';
+import { {{pascalCase featureKebab}}Mapper } from '../mappers/{{kebabCase featureKebab}}.mapper';
+
+// Inferindo tipos direto do PrismaService (sem @prisma/client Prisma/Event)
+type PrismaModel = NonNullable<
+  Awaited<ReturnType<PrismaService['{{camelCase prismaModel}}']['findUnique']>>
+>;
+
+@Injectable()
+export class Prisma{{pascalCase featureKebab}}Repository implements {{pascalCase featureKebab}}Repository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(dto: Create{{pascalCase featureKebab}}Dto): Promise<{{pascalCase featureKebab}}Entity> {
+    const data = {{pascalCase featureKebab}}Mapper.toCreateInput(dto);
+
+    {{#if softDelete}}
+    {{#if hasStatusField}}
+    (data as any).status = 1;
+    {{/if}}
+    {{/if}}
+
+    const created: PrismaModel = await this.prisma.{{camelCase prismaModel}}.create({ data } as any);
+    return {{pascalCase featureKebab}}Mapper.toEntity(created);
+  }
+
+  async findAll(): Promise<{{pascalCase featureKebab}}Entity[]> {
+    {{#if softDelete}}
+    {{#if hasStatusField}}
+    const results = await this.prisma.{{camelCase prismaModel}}.findMany({ where: { status: 1 } });
+    {{else}}
+    const results = await this.prisma.{{camelCase prismaModel}}.findMany();
+    {{/if}}
+    {{else}}
+    const results = await this.prisma.{{camelCase prismaModel}}.findMany();
+    {{/if}}
+
+    return results.map((r) => {{pascalCase featureKebab}}Mapper.toEntity(r as PrismaModel));
+  }
+
+  async findById(id: string): Promise<{{pascalCase featureKebab}}Entity | null> {
+    {{#if softDelete}}
+    {{#if hasStatusField}}
+    const result = await this.prisma.{{camelCase prismaModel}}.findFirst({ where: { id, status: 1 } });
+    {{else}}
+    const result = await this.prisma.{{camelCase prismaModel}}.findUnique({ where: { id } });
+    {{/if}}
+    {{else}}
+    const result = await this.prisma.{{camelCase prismaModel}}.findUnique({ where: { id } });
+    {{/if}}
+
+    return result ? {{pascalCase featureKebab}}Mapper.toEntity(result as PrismaModel) : null;
+  }
+
+  async update(id: string, dto: Update{{pascalCase featureKebab}}Dto): Promise<{{pascalCase featureKebab}}Entity> {
+    const data = {{pascalCase featureKebab}}Mapper.toUpdateInput(dto);
+
+    const updated = await this.prisma.{{camelCase prismaModel}}.update({
+      where: { id },
+      data,
+    });
+
+    return {{pascalCase featureKebab}}Mapper.toEntity(updated as PrismaModel);
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    const found = await this.prisma.{{camelCase prismaModel}}.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    return !!found;
+  }
+
+  async delete(id: string): Promise<void> {
+    {{#if softDelete}}
+    {{#if hasStatusField}}
+    await this.prisma.{{camelCase prismaModel}}.update({ where: { id }, data: { status: 0 } });
+    {{else}}
+    await this.prisma.{{camelCase prismaModel}}.delete({ where: { id } });
+    {{/if}}
+    {{else}}
+    await this.prisma.{{camelCase prismaModel}}.delete({ where: { id } });
+    {{/if}}
+  }
+}

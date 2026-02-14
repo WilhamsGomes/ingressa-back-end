@@ -1,0 +1,24 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, {{#if needsEnumImport}}IsEnum,{{/if}} IsBoolean, IsDateString, IsInt, IsNumber, IsString } from 'class-validator';
+{{#if needsEnumImport}}
+import { {{#each createFields}}{{#if isEnum}}{{enumName}},{{/if}}{{/each}} } from '@prisma/client';
+{{/if}}
+
+export class Create{{pascalCase featureKebab}}Dto {
+{{#each createFields}}
+  {{#if optionalProp}}
+  @ApiPropertyOptional({ description: '{{name}}', required: false })
+  @IsOptional()
+  {{else}}
+  @ApiProperty({ description: '{{name}}', required: true })
+  {{/if}}
+
+  {{#if isEnum}}
+  @IsEnum({{enumName}})
+  {{else}}
+  @{{decorators.[0]}}()
+  {{/if}}
+  {{name}}{{#if optionalProp}}?{{/if}}: {{tsType}};
+
+{{/each}}
+}

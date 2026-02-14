@@ -1,0 +1,31 @@
+import { Module } from '@nestjs/common';
+import { {{pascalCase featureKebab}}Controller } from './infra/controllers/{{kebabCase featureKebab}}.controller';
+import { Prisma{{pascalCase featureKebab}}Repository } from './infra/prisma/prisma-{{kebabCase featureKebab}}.repository';
+import { {{pascalCase featureKebab}}Repository } from './domain/repositories/{{kebabCase featureKebab}}.repository';
+
+import { Create{{pascalCase featureKebab}}UseCase } from './application/use-cases/create-{{kebabCase featureKebab}}.usecase';
+import { FindAllUseCase } from './application/use-cases/find-all.usecase';
+import { Find{{pascalCase featureKebab}}ByIdUseCase } from './application/use-cases/find-{{kebabCase featureKebab}}-by-id.usecase';
+import { Update{{pascalCase featureKebab}}UseCase } from './application/use-cases/update-{{kebabCase featureKebab}}.usecase';
+import { Delete{{pascalCase featureKebab}}UseCase } from './application/use-cases/delete-{{kebabCase featureKebab}}.usecase';
+{{#if hasPassword}}
+import { PasswordService } from './application/services/password.service';
+{{/if}}
+
+@Module({
+  controllers: [{{pascalCase featureKebab}}Controller],
+  providers: [
+    { provide: {{pascalCase featureKebab}}Repository, useClass: Prisma{{pascalCase featureKebab}}Repository },
+
+    Create{{pascalCase featureKebab}}UseCase,
+    FindAllUseCase,
+    Find{{pascalCase featureKebab}}ByIdUseCase,
+    Update{{pascalCase featureKebab}}UseCase,
+    Delete{{pascalCase featureKebab}}UseCase,
+    {{#if hasPassword}}PasswordService,{{/if}}
+  ],
+  exports: [
+    { provide: {{pascalCase featureKebab}}Repository, useClass: Prisma{{pascalCase featureKebab}}Repository },
+  ],
+})
+export class {{pascalCase featureKebab}}Module {}
